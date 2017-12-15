@@ -95,6 +95,9 @@ new_string = X[start_index]
 for i in range(50):
     x = numpy.reshape(new_string, (1, len(new_string), 1))
     x = x / float(len(unique_words))
+    
+#Build sentences for prediction
+sentences = text.split('.')
 
 #predicting
 pred_index = numpy.argmax(model.predict(x, verbose=0))
