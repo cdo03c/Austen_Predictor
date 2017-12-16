@@ -29,25 +29,14 @@ urls = ['https://www.gutenberg.org/files/141/141-0.txt',
         'https://www.gutenberg.org/files/1342/1342-0.txt']
 books = [requests.get(u).text.lower() for u in urls]
 
-###INSERT CLEAN TEXT FUNCTION###
+##Combine the the books into one continuous character string
 text = ''
 for b in books:
     text = text + b
-    
+
+#Use REGEX to remove escape characters from the text.
 text = re.sub('[\r\t\n\ufeff]', ' ', text)
 
-# =============================================================================
-# # mapping characters with integers
-# unique_chars = sorted(list(set(text)))
-# 
-# char_to_int = {}
-# int_to_char = {}
-# 
-# for i, c in enumerate (unique_chars):
-#     char_to_int.update({c: i})
-#     int_to_char.update({i: c})
-# =============================================================================
-    
 # mapping words with integers
 words = re.compile('\w+').findall(text)
 unique_words = sorted(list(set(words)))
@@ -86,6 +75,21 @@ model.compile(loss='categorical_crossentropy', optimizer='adam')
 
 # fitting the model
 model.fit(X_modified, Y_modified, epochs=1, batch_size=30)
+
+# =============================================================================
+# WARNING - on the following system it took 89465 seconds (24.8 hours)
+# to run.
+#
+# Model Name:	MacBook Pro
+#   Model Identifier:	MacBookPro11,1
+#   Processor Name:	Intel Core i5
+#   Processor Speed:	2.4 GHz
+#   Number of Processors:	1
+#   Total Number of Cores:	2
+#   L2 Cache (per Core):	256 KB
+#   L3 Cache:	3 MB
+#   Memory:	8 GB
+# =============================================================================
 
 # picking a random seed
 start_index = numpy.random.randint(0, len(X)-1)
