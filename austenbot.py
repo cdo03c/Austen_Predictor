@@ -92,16 +92,23 @@ model.fit(X_modified, Y_modified, epochs=1, batch_size=30)
 # =============================================================================
 
 # picking a random seed
-start_index = numpy.random.randint(0, len(X)-1)
-new_string = X[start_index]
+#start_index = numpy.random.randint(0, len(X)-1)
+#new_string = X[start_index]
 
 # generating words
 for i in range(50):
     x = numpy.reshape(new_string, (1, len(new_string), 1))
     x = x / float(len(unique_words))
     
-#Build sentences for prediction
+#Build sentences for prediction by creating a list of sentence strings
+#missing the last word from the texts and a list of the last words to
+#use as ground truth for prediction.
 sentences = text.split('.')
+wordSentences = [re.compile('\w+').findall(s) for s in sentences 
+                 if len(re.compile('\w+').findall(s)) > 5]
+intSentences = [[word_to_int[word] for word in words] for words in wordSentences]
+testSentences = [ints[:-1] for ints in intSentences]
+testLabels = [ints[-1:] for ints in intSentences]
 
 #predicting
 pred_index = numpy.argmax(model.predict(x, verbose=0))
