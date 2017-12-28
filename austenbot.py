@@ -16,8 +16,10 @@ from keras.layers import Dense
 from keras.layers import Dropout
 from keras.layers import LSTM
 from keras.utils import np_utils
+from keras.models import load_model
 import requests
 import re
+import os
 
 #Download the text from the six Jane Austen novels and store in a list
 #called books
@@ -63,18 +65,28 @@ X_modified = numpy.reshape(X, (len(X), 50, 1))
 X_modified = X_modified / float(len(unique_words))
 Y_modified = np_utils.to_categorical(Y)
 
-# defining the LSTM model
-model = Sequential()
-model.add(LSTM(300, input_shape=(X_modified.shape[1], X_modified.shape[2]), return_sequences=True))
-model.add(Dropout(0.2))
-model.add(LSTM(300))
-model.add(Dropout(0.2))
-model.add(Dense(Y_modified.shape[1], activation='softmax'))
+#Laod path to the model
+model_path = r'austen_model.h5'
 
-model.compile(loss='categorical_crossentropy', optimizer='adam')
+#Test if the model exists at the path saved above and loads the model if it
+#already exists.
+if os.path.exists(model_path):
+    load_model(model_path)
+else:
+    # defining the LSTM model
+    model = Sequential()
+    model.add(LSTM(300, input_shape=(X_modified.shape[1], X_modified.shape[2]), return_sequences=True))
+    model.add(Dropout(0.2))
+    model.add(LSTM(300))
+    model.add(Dropout(0.2))
+    model.add(Dense(Y_modified.shape[1], activation='softmax'))
 
-# fitting the model
-model.fit(X_modified, Y_modified, epochs=1, batch_size=30)
+    model.compile(loss='categorical_crossentropy', optimizer='adam')
+
+    # fitting the model
+    model.fit(X_modified, Y_modified, epochs=1, batch_size=30)
+
+
 
 # =============================================================================
 # WARNING - on the following system it took 89465 seconds (24.8 hours)
@@ -90,6 +102,9 @@ model.fit(X_modified, Y_modified, epochs=1, batch_size=30)
 #   L3 Cache:	3 MB
 #   Memory:	8 GB
 # =============================================================================
+
+#Save out model after fitting
+model.save(r'austen_model.h5')
 
 # picking a random seed
 #start_index = numpy.random.randint(0, len(X)-1)
