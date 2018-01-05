@@ -86,20 +86,21 @@ else:
     model.add(Dropout(0.2))
     model.add(LSTM(300))
     model.add(Dropout(0.2))
-    model.add(Dense(Y_modified.shape[1], activation='softmax'))
+    model.add(Dense(Y_modified.shape[1], activation='relu'))
 
     model.compile(loss='categorical_crossentropy', optimizer='adam')
 
     # fitting the model
-    model.fit(X_modified[0:10000], Y_modified[0:10000], epochs=1, batch_size=30)
+    model.fit(X_modified[0:10000], Y_modified[0:10000], epochs=4, batch_size=30,
+              validation_split = .1)
 
-
+    X_modified[0:10000], Y_modified[0:10000]
 
 # =============================================================================
 # WARNING - on the following system it took 89465 seconds (24.8 hours)
 # to run.
 #
-# Model Name:	MacBook Pro
+#   Model Name:	MacBook Pro
 #   Model Identifier:	MacBookPro11,1
 #   Processor Name:	Intel Core i5
 #   Processor Speed:	2.4 GHz
@@ -113,47 +114,7 @@ else:
     #Save out model after fitting
     model.save(r'austen_model10000.h5')
 
-# =============================================================================
-# Below is code for generating random word sequences to feed into model for 
-# prediction.
-# This can be interesting, but this fails at the task of understanding whether
-# or not the model is good at predicting what Jane Austen would have written
-# so at first we take the corpus of her novels on which the model was trained
-# and generate sentences to see if the model can predict the last word in senetences
-# of at least 5 words.  Then Jane Austen's letters are loaded to understand
-# how good the model is at predicting her words on previously unseen data.
-#
-# # picking a random seed
-# start_index = numpy.random.randint(0, len(X)-1)
-# new_string = X[start_index]
-# 
-# # generating random words
-# for i in range(50):
-#     x = numpy.reshape(new_string, (1, len(new_string), 1))
-#     x = x / float(len(unique_words))
-# #predicting
-# pred_index = numpy.argmax(model.predict(x, verbose=0))
-# word_out = int_to_word[pred_index]
-# seq_in = [int_to_word[value] for value in new_string]
-# print(seq_in, word_out)
 
-# new_string.append(pred_index)
-# new_string = new_string[1:len(new_string)]
-# =============================================================================
-    
-##Build sentences for prediction by creating a list of sentence strings
-##missing the last word from the texts and a list of the last words to
-##use as ground truth for prediction.
-#sentences = text.split('.')
-#wordSentences = [re.compile('\w+').findall(s) for s in sentences 
-#                 if len(re.compile('\w+').findall(s)) > 5]
-#intSentences = [[word_to_int[word] for word in words] for words in wordSentences]
-#testSentences = [ints[:-1] for ints in intSentences]
-#testLabels = [ints[-1:] for ints in intSentences]
-#
-#x1 = numpy.reshape(testSentences[0], (1,len(testSentences[0]),1))
-#x1 = x1 / float(len(unique_words))
-#pred_index = numpy.argmax(model.predict(x, verbose=0))
 
 test_num = 500
 rand_strings = [numpy.random.randint(0, len(X)-1) for i in range(test_num)]
