@@ -4,6 +4,9 @@
 Created on Tue Jan 16 06:30:43 2018
 
 @author: cdo03c
+
+Version: 1.0
+Dependencies: Python 3.6, Keras 2.0.4, Numpy 1.13.3
 """
 ### IMPORTING DEPENDENCIES ###
 import numpy as np
