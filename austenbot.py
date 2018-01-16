@@ -22,6 +22,10 @@ import re
 import os
 import pandas as pd
 
+### FUNCTION DEFINITIONS ###
+def remove_header(books):
+    return([books[b][books[b].find(' ***')+4:] for b in range(len(books))])
+
 #Download the text from the six Jane Austen novels and store in a list
 #called books
 urls = ['https://www.gutenberg.org/files/141/141-0.txt',
@@ -32,26 +36,25 @@ urls = ['https://www.gutenberg.org/files/141/141-0.txt',
         'https://www.gutenberg.org/files/1342/1342-0.txt']
 books = [requests.get(u).text.lower() for u in urls]
 
+#Remove of the Gutenberg website headers
+books = remove_header(books)
+
 ##Combine the the books into one continuous character string
-text = ''
-for b in books:
-    text = text + b
+text = ''.join(books)
 
 #Use REGEX to remove escape characters from the text.
 text = re.sub('[\r\t\n\ufeff]', ' ', text)
 
 print('Corpus loaded and cleaned')
 
-# mapping words with integers
+#Builds a list of all words and unique words
 words = re.compile('\w+').findall(text)
 unique_words = sorted(list(set(words)))
 
-word_to_int = {}
-int_to_word = {}
+#Builds word to integer mappings
+word_to_int = dict((w, i) for i, w in enumerate(unique_words))
+int_to_word = dict((i, w) for i, w in enumerate(unique_words))
 
-for i, c in enumerate (unique_words):
-    word_to_int.update({c: i})
-    int_to_word.update({i: c})
 
 # preparing input and output dataset
 X = []
@@ -59,8 +62,8 @@ Y = []
 
 for i in range(0, len(words) - 50, 1):
     sequence = words[i:i + 50]
-    label =words[i + 50]
-    X.append([word_to_int[char] for char in sequence])
+    label = words[i + 50]
+    X.append([word_to_int[word] for word in sequence])
     Y.append(word_to_int[label])
     
 # reshaping, normalizing and one hot encoding
